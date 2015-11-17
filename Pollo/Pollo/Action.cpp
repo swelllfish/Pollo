@@ -67,7 +67,7 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	hdcBuffer = CreateCompatibleDC(NULL);
 	hdcEyes = CreateCompatibleDC(NULL);
 
-	SelectObject(hdcBuffer,GetStockObject(BLACK_BRUSH));
+	SelectObject(hdcBuffer,GetStockObject(LTGRAY_BRUSH));
 	//SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
 	SelectObject(hdcBuffer, hBitMap);
 	PatBlt(hdcBuffer, 0, 0, cxClient, cyClient, WHITENESS);

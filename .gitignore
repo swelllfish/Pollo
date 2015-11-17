@@ -1,0 +1,16 @@
+*.exe
+Pollo/Debug/Pollo.ilk
+*.pdb
+Pollo/ipch/pollo-38ae3196/pollo-ea6147f2.ipch
+*.obj
+Pollo/Pollo/Debug/cl.command.1.tlog
+*.idb
+Pollo/Pollo/Debug/rc.write.1.tlog
+*.tlog
+*.manifest
+Pollo/Pollo/Debug/Pollo.exe.embed.manifest.res
+*.log
+Pollo/Pollo/Debug/Pollo.lastbuildstate
+*.pch
+*.rc
+*.res
