@@ -1,7 +1,7 @@
 /* Version: v1.0
    Owner: Swell_Fish
-   Remarks: bu xd rh ve me jq mzyb ly,xmzl iuyu xtxi tcsepj jxdr,zl jn jitm vinz
-			y;gl buhv yb ggxn.
+   Remarks: Now I'm learning the Palette.But don't wantted stop
+			commit new thing.So modify some Notes to make it looks better
 */
 
 #include "StdAfx.h"
