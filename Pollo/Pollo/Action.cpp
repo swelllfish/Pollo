@@ -1,3 +1,9 @@
+/* Version: v1.0
+   Owner: Swell_Fish
+   Remarks: bu xd rh ve me jq mzyb ly,xmzl iuyu xtxi tcsepj jxdr,zl jn jitm vinz
+			y;gl buhv yb ggxn.
+*/
+
 #include "StdAfx.h"
 #include "Action.h"
 
