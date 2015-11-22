@@ -69,11 +69,15 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	POINT point[PTNUM];		//用于计算的点
 	int ptNum;
 	HDC hdcBuffer, hdcEyes;
-	
+	HBRUSH hBrush;
+	static int i = 1000;
+
 	hdcBuffer = CreateCompatibleDC(NULL);
 	hdcEyes = CreateCompatibleDC(NULL);
 
-	SelectObject(hdcBuffer,GetStockObject(LTGRAY_BRUSH));
+	hBrush = CreateSolidBrush(RGB(rand()%255, rand()%255, rand()%255));
+	SelectObject(hdcBuffer,hBrush);
+	//SelectObject(hdcBuffer,GetStockObject(LTGRAY_BRUSH));
 	//SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
 	SelectObject(hdcBuffer, hBitMap);
 	PatBlt(hdcBuffer, 0, 0, cxClient, cyClient, WHITENESS);

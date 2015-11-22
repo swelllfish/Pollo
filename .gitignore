@@ -14,3 +14,9 @@ Pollo/Pollo/Debug/Pollo.lastbuildstate
 *.pch
 *.rc
 *.res
+.svn/entries
+.svn/wc.db-journal
+*.svn-base
+.svn/wc.db
+*.ipch
+.svn/format

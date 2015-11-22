@@ -12,6 +12,7 @@
 #define ID_TIMER	1
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+void SetWindowUnvisible(HWND);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -59,25 +60,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static Action action;
 	PAINTSTRUCT ps;
 	HDC hdc, hdcBuffer;
-	LONG dwStyle, dwNewStyle, dwNewExStyle, dwExStyle;
 	HINSTANCE hInstance;
 
 	switch(message)
 	{
 	case WM_CREATE:
 		SetTimer(hwnd, ID_TIMER, TIMER_CLK, NULL);
-		//设置窗口背景和边框透明
-		dwStyle = GetWindowLong(hwnd, GWL_STYLE);
-		dwNewStyle = WS_OVERLAPPED | WS_VISIBLE| WS_SYSMENU |WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
-		dwNewStyle &= dwStyle;
-		SetWindowLong(hwnd,GWL_STYLE,dwNewStyle);
-		dwExStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-		dwNewExStyle = WS_EX_LEFT |WS_EX_LTRREADING |WS_EX_RIGHTSCROLLBAR;
-		dwNewExStyle &= dwExStyle;
-		SetWindowLong(hwnd,GWL_EXSTYLE,dwNewExStyle);//设置新的扩展样式
-		SetWindowPos(hwnd, NULL,0,0,0,0,SWP_NOZORDER|SWP_NOMOVE|SWP_NOSIZE|SWP_FRAMECHANGED);
-		SetWindowLong(hwnd,GWL_EXSTYLE,GetWindowLong(hwnd,GWL_EXSTYLE)|WS_EX_LAYERED );  
-		SetLayeredWindowAttributes(hwnd, RGB(255,255,255),255,LWA_ALPHA | LWA_COLORKEY);
+		SetWindowUnvisible(hwnd);
 
 		//hBitMap = CreateBitmap(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 1, 1, NULL);
 		hdc = GetDC(hwnd);
@@ -117,4 +106,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+void SetWindowUnvisible(HWND hwnd)
+{			
+	LONG dwStyle, dwNewStyle, dwNewExStyle, dwExStyle;
+	//设置窗口背景和边框透明
+	dwStyle = GetWindowLong(hwnd, GWL_STYLE);
+	dwNewStyle = WS_OVERLAPPED | WS_VISIBLE| WS_SYSMENU |WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
+	dwNewStyle &= dwStyle;
+	SetWindowLong(hwnd,GWL_STYLE,dwNewStyle);
+	dwExStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+	dwNewExStyle = WS_EX_LEFT |WS_EX_LTRREADING |WS_EX_RIGHTSCROLLBAR;
+	dwNewExStyle &= dwExStyle;
+	SetWindowLong(hwnd,GWL_EXSTYLE,dwNewExStyle);//设置新的扩展样式
+	SetWindowPos(hwnd, NULL,0,0,0,0,SWP_NOZORDER|SWP_NOMOVE|SWP_NOSIZE|SWP_FRAMECHANGED);
+	SetWindowLong(hwnd,GWL_EXSTYLE,GetWindowLong(hwnd,GWL_EXSTYLE)|WS_EX_LAYERED );  
+	SetLayeredWindowAttributes(hwnd, RGB(255,255,255),255,LWA_ALPHA | LWA_COLORKEY);
 }
