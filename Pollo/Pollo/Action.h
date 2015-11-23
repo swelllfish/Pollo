@@ -21,6 +21,7 @@ public:
 	void SurfaceChange(int, int);	//界面边界变化
 	void CalSpeed();
 	void GetEyesBitMap(HINSTANCE);
+	int CalBezierPoint(HDC, int, int, int, POINT);	//计算贝塞尔曲线，根据强度来决定振幅，通过比例来决定状态
 private:
 	POINT currpt;		//当前位置
 	double xLocation;	//由于POINT按照整数移动，用double来计算实际位置
