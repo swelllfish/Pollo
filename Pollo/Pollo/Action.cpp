@@ -3,7 +3,6 @@
    Remarks: Now I'm learning the Palette.But don't wantted stop
 			commit new thing.So modify some Notes to make it looks better
 */
-
 #include "StdAfx.h"
 #include "Action.h"
 
@@ -61,6 +60,16 @@ void Action::CirCleMove(HBITMAP hBitMap, POINT despt)
 		currpt.x = cxClient - DIAMETER;
 	}
 
+	if(currpt.y < 0)
+	{
+		currpt.y = 0;
+	}
+
+	if(currpt.x < 0)
+	{
+		currpt.x = 0;
+	}
+
 	DrawCirCle(hBitMap, currpt);
 }
 
@@ -70,7 +79,7 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	POINT InPoint[PTNUM];
 	int ptNum;
 	HDC hdcBuffer, hdcEyes;
-	HBRUSH hBrush;
+	//HBRUSH hBrush;
 	static int i = 1000;
 
 	hdcBuffer = CreateCompatibleDC(NULL);
@@ -88,7 +97,7 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 		InPoint[ptNum].y = (int)((DIAMETER - 1)* sin(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.y;
 		if(InPoint[ptNum].y < pt.y)
 		{
-			InPoint[ptNum].y = pt.y;
+		//	InPoint[ptNum].y = pt.y;
 		}
 	}
 	SelectObject(hdcBuffer,GetStockObject(NULL_BRUSH));
@@ -100,8 +109,15 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	CalBezierPoint(hdcBuffer, 1, 10, 1, pt);
 
 	SelectObject(hdcEyes, hBitEyes);
-	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
-	BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
+	//BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
+	//BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
+	BLENDFUNCTION Blendfunction;
+	Blendfunction.BlendOp = AC_SRC_OVER;
+	Blendfunction.BlendFlags = 0;
+	Blendfunction.SourceConstantAlpha = 100;
+	Blendfunction.AlphaFormat = 0x00;
+
+	AlphaBlend(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, 14, 17, Blendfunction);
 	DeleteDC(hdcBuffer);
 	DeleteDC(hdcEyes);
 }

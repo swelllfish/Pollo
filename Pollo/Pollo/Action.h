@@ -1,4 +1,5 @@
 #pragma once
+#include <atlimage.h>
 #include <windows.h>
 #include <math.h>
 
