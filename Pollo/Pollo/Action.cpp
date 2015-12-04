@@ -19,30 +19,30 @@ Action::~Action(void)
 {
 }
 
-void Action::CalSpeed()
+void Action::CalSpeed(POINT despt)
 {
 	double dGravity = GRAVITY;
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
 
-	if(currpt.y == 0 || currpt.y == cyClient - DIAMETER)
+	if(currpt.y == DIAMETER || currpt.y == cyClient - DIAMETER)
 	{
 		ySpeed = -(ySpeed / ELASTICLOSS);
 	}
 
-	if(currpt.x == 0 || currpt.x == cxClient - DIAMETER)
+	if(currpt.x == DIAMETER || currpt.x == cxClient - DIAMETER)
 	{
 		xSpeed = -(xSpeed / ELASTICLOSS);
 	}
 
 	ySpeed += dGravity * dFrequency;	//当前速度等于 t*a+v
-
+	xSpeed += (despt.x - currpt.x) / TPROPOR;
 }
 
 void Action::CirCleMove(HBITMAP hBitMap, POINT despt)
 {
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
 
-	CalSpeed();
+	CalSpeed(despt);
 
 	xLocation += xSpeed * dFrequency;
 	yLocation += ySpeed * dFrequency;
@@ -62,12 +62,12 @@ void Action::CirCleMove(HBITMAP hBitMap, POINT despt)
 
 	if(currpt.y < 0)
 	{
-		currpt.y = 0;
+		currpt.y = DIAMETER;
 	}
 
 	if(currpt.x < 0)
 	{
-		currpt.x = 0;
+		currpt.x = DIAMETER;
 	}
 
 	DrawCirCle(hBitMap, currpt);
@@ -97,27 +97,29 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 		InPoint[ptNum].y = (int)((DIAMETER - 1)* sin(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.y;
 		if(InPoint[ptNum].y < pt.y)
 		{
-		//	InPoint[ptNum].y = pt.y;
+			InPoint[ptNum].y = pt.y;
 		}
 	}
+	SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
 	SelectObject(hdcBuffer,GetStockObject(NULL_BRUSH));
 	Polygon(hdcBuffer, OutPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
 	SelectObject(hdcBuffer, GetStockObject(LTGRAY_BRUSH));
 	Polygon(hdcBuffer, InPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(BLACK_PEN));
-	CalBezierPoint(hdcBuffer, 1, 10, 1, pt);
+	//CalBezierPoint(hdcBuffer, 1, 10, 1, pt);
 
 	SelectObject(hdcEyes, hBitEyes);
-	//BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
-	//BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
-	BLENDFUNCTION Blendfunction;
+	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
+	BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
+
+	/*BLENDFUNCTION Blendfunction;
 	Blendfunction.BlendOp = AC_SRC_OVER;
 	Blendfunction.BlendFlags = 0;
-	Blendfunction.SourceConstantAlpha = 100;
+	Blendfunction.SourceConstantAlpha = 5;
 	Blendfunction.AlphaFormat = 0x00;
 
-	AlphaBlend(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, 14, 17, Blendfunction);
+	AlphaBlend(hdcBuffer, pt.x, pt.y, 14, 17, hdcEyes, 0, 0, 14, 17, Blendfunction);*/
 	DeleteDC(hdcBuffer);
 	DeleteDC(hdcEyes);
 }
