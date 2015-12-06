@@ -73,7 +73,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hBitMap = CreateCompatibleBitmap(hdc, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 		ReleaseDC(hwnd, hdc);
 		hInstance = ((LPCREATESTRUCT)lParam)->hInstance;
-		action.GetEyesBitMap(hInstance);
+		action.GetBitMap(hInstance);
 
 		return 0;
 

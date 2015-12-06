@@ -21,7 +21,7 @@ public:
 	void CirCleMove(HBITMAP, POINT);	//Pollo移动
 	void SurfaceChange(int, int);	//界面边界变化
 	void CalSpeed(POINT despt);
-	void GetEyesBitMap(HINSTANCE);
+	void GetBitMap(HINSTANCE);
 	int CalBezierPoint(HDC, int, int, int, POINT);	//计算贝塞尔曲线，根据强度来决定振幅，通过比例来决定状态
 private:
 	POINT currpt;		//当前位置
@@ -32,5 +32,6 @@ private:
 	double xSpeed;		//速度
 	double ySpeed;
 	HBITMAP hBitEyes;	//眼睛
+	HBITMAP hBitShadow;
 };
 

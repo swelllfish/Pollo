@@ -72,6 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="shadow.bmp" />
     <None Include="Eyes.bmp" />
     <None Include="ReadMe.txt" />
   </ItemGroup>

@@ -42,7 +42,7 @@ void Action::CirCleMove(HBITMAP hBitMap, POINT despt)
 {
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
 
-	CalSpeed(despt);
+	//CalSpeed(despt);
 
 	xLocation += xSpeed * dFrequency;
 	yLocation += ySpeed * dFrequency;
@@ -78,15 +78,14 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	POINT OutPoint[PTNUM];		//用于计算的点
 	POINT InPoint[PTNUM];
 	int ptNum;
-	HDC hdcBuffer, hdcEyes;
-	//HBRUSH hBrush;
+	HDC hdcBuffer, hdcEyes, hdcShadow;
+	HBRUSH hBrush;
 	static int i = 1000;
 
 	hdcBuffer = CreateCompatibleDC(NULL);
 	hdcEyes = CreateCompatibleDC(NULL);
+	hdcShadow = CreateCompatibleDC(NULL);
 
-	//hBrush = CreateSolidBrush(RGB(rand()%255, rand()%255, rand()%255));
-	//SelectObject(hdcBuffer,hBrush);
 	SelectObject(hdcBuffer, hBitMap);
 	PatBlt(hdcBuffer, 0, 0, cxClient, cyClient, WHITENESS);
 	for(ptNum=0; ptNum<PTNUM; ptNum++)
@@ -104,7 +103,9 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	SelectObject(hdcBuffer,GetStockObject(NULL_BRUSH));
 	Polygon(hdcBuffer, OutPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
-	SelectObject(hdcBuffer, GetStockObject(LTGRAY_BRUSH));
+	hBrush = CreateSolidBrush(RGB(255, 0, 0));
+	//SelectObject(hdcBuffer, GetStockObject(LTGRAY_BRUSH));
+	SelectObject(hdcBuffer, hBrush);
 	Polygon(hdcBuffer, InPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(BLACK_PEN));
 	//CalBezierPoint(hdcBuffer, 1, 10, 1, pt);
@@ -113,15 +114,17 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
 	BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
 
-	/*BLENDFUNCTION Blendfunction;
+	SelectObject(hdcShadow, hBitShadow);
+	BLENDFUNCTION Blendfunction;
 	Blendfunction.BlendOp = AC_SRC_OVER;
 	Blendfunction.BlendFlags = 0;
-	Blendfunction.SourceConstantAlpha = 5;
+	Blendfunction.SourceConstantAlpha = 100;
 	Blendfunction.AlphaFormat = 0x00;
 
-	AlphaBlend(hdcBuffer, pt.x, pt.y, 14, 17, hdcEyes, 0, 0, 14, 17, Blendfunction);*/
+	AlphaBlend(hdcBuffer, pt.x - DIAMETER, pt.y - DIAMETER, DIAMETER * 2, DIAMETER * 2, hdcShadow, 0, 0, DIAMETER * 2, DIAMETER * 2, Blendfunction);
 	DeleteDC(hdcBuffer);
 	DeleteDC(hdcEyes);
+	DeleteDC(hdcShadow);
 }
 
 void Action::SurfaceChange(int txClient, int tyClient)
@@ -130,9 +133,10 @@ void Action::SurfaceChange(int txClient, int tyClient)
 	cyClient = tyClient;
 }
 
-void Action::GetEyesBitMap(HINSTANCE hInstance)
+void Action::GetBitMap(HINSTANCE hInstance)
 {
 	hBitEyes = LoadBitmap(hInstance, TEXT("Eyes"));
+	hBitShadow = LoadBitmap(hInstance, TEXT("Shadow"));
 }
 
 //******iStatus 表示在目前震动的状态，数值为1-50***************//
