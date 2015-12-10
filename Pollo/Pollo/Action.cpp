@@ -12,6 +12,10 @@ Action::Action(void)
 	yLocation	= DIAMETER;
 	xSpeed		= 0;
 	ySpeed		= 0;
+	preCursor.x = 0;
+	preCursor.y = 0;
+	nowCursor.x = 0;
+	nowCursor.y = 0;
 }
 
 
@@ -19,56 +23,66 @@ Action::~Action(void)
 {
 }
 
-void Action::CalSpeed(POINT despt)
+void Action::CalSpeed()
 {
 	double dGravity = GRAVITY;
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
 
-	if(currpt.y == DIAMETER || currpt.y == cyClient - DIAMETER)
+	if(yLocation < DIAMETER || yLocation > cyClient - DIAMETER)
 	{
 		ySpeed = -(ySpeed / ELASTICLOSS);
 	}
 
-	if(currpt.x == DIAMETER || currpt.x == cxClient - DIAMETER)
+	if(xLocation < DIAMETER || xLocation > cxClient - DIAMETER)
 	{
 		xSpeed = -(xSpeed / ELASTICLOSS);
 	}
 
 	ySpeed += dGravity * dFrequency;	//当前速度等于 t*a+v
-	xSpeed += (despt.x - currpt.x) / TPROPOR;
+
+	//用鼠标来提供碰撞
+	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
+	if(Distance < DIAMETER)
+	{
+		xSpeed += xCursorSpeed;
+		ySpeed += yCursorSpeed;
+	}
+
+	//xSpeed += (despt.x - currpt.x) / TPROPOR;
 }
 
-void Action::CirCleMove(HBITMAP hBitMap, POINT despt)
+void Action::CirCleMove(HBITMAP hBitMap)
 {
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
 
-	//CalSpeed(despt);
 
 	xLocation += xSpeed * dFrequency;
 	yLocation += ySpeed * dFrequency;
 
+	CalSpeed();
+
+	if(yLocation > cyClient - DIAMETER)
+	{
+		yLocation = cyClient - DIAMETER;
+	}
+
+	if(xLocation > cxClient - DIAMETER)
+	{
+		xLocation = cxClient - DIAMETER;
+	}
+
+	if(yLocation < DIAMETER)
+	{
+		yLocation = DIAMETER;
+	}
+
+	if(xLocation < DIAMETER)
+	{
+		xLocation = DIAMETER;
+	}
+
 	currpt.x = (int)xLocation;
 	currpt.y = (int)yLocation;
-
-	if(currpt.y > cyClient - DIAMETER)
-	{
-		currpt.y = cyClient - DIAMETER;
-	}
-
-	if(currpt.x > cyClient - DIAMETER)
-	{
-		currpt.x = cxClient - DIAMETER;
-	}
-
-	if(currpt.y < 0)
-	{
-		currpt.y = DIAMETER;
-	}
-
-	if(currpt.x < 0)
-	{
-		currpt.x = DIAMETER;
-	}
 
 	DrawCirCle(hBitMap, currpt);
 }
@@ -103,7 +117,7 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	SelectObject(hdcBuffer,GetStockObject(NULL_BRUSH));
 	Polygon(hdcBuffer, OutPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
-	hBrush = CreateSolidBrush(RGB(255, 0, 0));
+	hBrush = CreateSolidBrush(RGB(100, 255, 0));
 	//SelectObject(hdcBuffer, GetStockObject(LTGRAY_BRUSH));
 	SelectObject(hdcBuffer, hBrush);
 	Polygon(hdcBuffer, InPoint, PTNUM);
@@ -118,7 +132,7 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	BLENDFUNCTION Blendfunction;
 	Blendfunction.BlendOp = AC_SRC_OVER;
 	Blendfunction.BlendFlags = 0;
-	Blendfunction.SourceConstantAlpha = 100;
+	Blendfunction.SourceConstantAlpha = 50;
 	Blendfunction.AlphaFormat = 0x00;
 
 	AlphaBlend(hdcBuffer, pt.x - DIAMETER, pt.y - DIAMETER, DIAMETER * 2, DIAMETER * 2, hdcShadow, 0, 0, DIAMETER * 2, DIAMETER * 2, Blendfunction);
@@ -139,56 +153,64 @@ void Action::GetBitMap(HINSTANCE hInstance)
 	hBitShadow = LoadBitmap(hInstance, TEXT("Shadow"));
 }
 
+void Action::GetCurrCursor(POINT currCursor)
+{
+	preCursor = nowCursor;
+	nowCursor = currCursor;
+
+	xCursorSpeed = nowCursor.x - preCursor.x;
+	yCursorSpeed = nowCursor.y - preCursor.y;
+}
 //******iStatus 表示在目前震动的状态，数值为1-50***************//
 //******iStrength表示目前震动的强度，数值范围待定**************//
-int Action::CalBezierPoint(HDC hdcBuffer, int xPoint, int iStrength, int iStatus, POINT pt)
-{
-	POINT CtrlPoint[4];
-	static int i = 10;
-	static int flag = 0;
-	static int k = 80;
-
-	CtrlPoint[0].x = pt.x - DIAMETER;
-	CtrlPoint[0].y = pt.y;
-
-	CtrlPoint[1].x = pt.x - DIAMETER + iStrength;
-	CtrlPoint[1].y = pt.y - i;
-	
-	CtrlPoint[2].x = pt.x + DIAMETER - iStrength;
-	CtrlPoint[2].y = pt.y + i;
-
-	CtrlPoint[3].x = pt.x + DIAMETER;
-	CtrlPoint[3].y = pt.y;
-
-	PolyBezier(hdcBuffer, CtrlPoint, 4);
-
-	/*
-	double t = 0.3;
-	int y = (int)((pt.x - DIAMETER) * pow((1-t),3) + 
-			3 * CtrlPoint[0].x * t * pow((1-t),2) +
-			3 * CtrlPoint[1].x * pow(t, 2)*(1-t) +
-			pt.x + DIAMETER * pow(t,3));
-	*/
-
-	if(flag == 1)
-	{
-		i += 6;
-		if(i >= k)
-		{
-			flag = 0;
-			k -= 2;
-			return 0;
-		}
-	}
-
-	if(flag == 0)
-	{
-		i -= 6;
-		if(i <= -k)
-		{
-			flag = 1;
-			k -= 2;
-		}
-	}
-	return 0;
-}
+//int Action::CalBezierPoint(HDC hdcBuffer, int xPoint, int iStrength, int iStatus, POINT pt)
+//{
+//	POINT CtrlPoint[4];
+//	static int i = 10;
+//	static int flag = 0;
+//	static int k = 80;
+//
+//	CtrlPoint[0].x = pt.x - DIAMETER;
+//	CtrlPoint[0].y = pt.y;
+//
+//	CtrlPoint[1].x = pt.x - DIAMETER + iStrength;
+//	CtrlPoint[1].y = pt.y - i;
+//	
+//	CtrlPoint[2].x = pt.x + DIAMETER - iStrength;
+//	CtrlPoint[2].y = pt.y + i;
+//
+//	CtrlPoint[3].x = pt.x + DIAMETER;
+//	CtrlPoint[3].y = pt.y;
+//
+//	PolyBezier(hdcBuffer, CtrlPoint, 4);
+//
+//	/*
+//	double t = 0.3;
+//	int y = (int)((pt.x - DIAMETER) * pow((1-t),3) + 
+//			3 * CtrlPoint[0].x * t * pow((1-t),2) +
+//			3 * CtrlPoint[1].x * pow(t, 2)*(1-t) +
+//			pt.x + DIAMETER * pow(t,3));
+//	*/
+//
+//	if(flag == 1)
+//	{
+//		i += 6;
+//		if(i >= k)
+//		{
+//			flag = 0;
+//			k -= 2;
+//			return 0;
+//		}
+//	}
+//
+//	if(flag == 0)
+//	{
+//		i -= 6;
+//		if(i <= -k)
+//		{
+//			flag = 1;
+//			k -= 2;
+//		}
+//	}
+//	return 0;
+//}

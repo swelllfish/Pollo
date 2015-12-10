@@ -55,9 +55,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static int cxClient, cyClient;
 	static HBITMAP hBitMap;
-	static POINT pt = {0,0};
 	static POINT tmppt;
 	static Action action;
+	POINT currCursor;
 	PAINTSTRUCT ps;
 	HDC hdc, hdcBuffer;
 	HINSTANCE hInstance;
@@ -84,9 +84,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_TIMER:
-		pt.x = 0;
-		pt.y = cyClient;
-		action.CirCleMove(hBitMap, pt);
+		GetCursorPos(&currCursor);
+		action.GetCurrCursor(currCursor);
+		action.CirCleMove(hBitMap);
 		InvalidateRect(hwnd, NULL, TRUE);
 		return 0;
 

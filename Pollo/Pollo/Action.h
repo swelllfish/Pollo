@@ -18,20 +18,26 @@ public:
 	Action(void);
 	~Action(void);
 	void DrawCirCle(HBITMAP, POINT);	//画Pollo~
-	void CirCleMove(HBITMAP, POINT);	//Pollo移动
+	void CirCleMove(HBITMAP);	//Pollo移动
 	void SurfaceChange(int, int);	//界面边界变化
-	void CalSpeed(POINT despt);
+	void CalSpeed();
 	void GetBitMap(HINSTANCE);
-	int CalBezierPoint(HDC, int, int, int, POINT);	//计算贝塞尔曲线，根据强度来决定振幅，通过比例来决定状态
+	void GetCurrCursor(POINT);
+	//int CalBezierPoint(HDC, int, int, int, POINT);	//计算贝塞尔曲线，根据强度来决定振幅，通过比例来决定状态
 private:
 	POINT currpt;		//当前位置
+	POINT preCursor;	//鼠标前一个位置
+	POINT nowCursor;	//鼠标当前位置
 	double xLocation;	//由于POINT按照整数移动，用double来计算实际位置
 	double yLocation;
 	int cxClient;		//界面大小
 	int cyClient;
 	double xSpeed;		//速度
 	double ySpeed;
+	double xCursorSpeed;//鼠标速度
+	double yCursorSpeed;
 	HBITMAP hBitEyes;	//眼睛
 	HBITMAP hBitShadow;
+
 };
 
