@@ -16,6 +16,7 @@ Action::Action(void)
 	preCursor.y = 0;
 	nowCursor.x = 0;
 	nowCursor.y = 0;
+	Flag = 0;
 }
 
 
@@ -42,13 +43,29 @@ void Action::CalSpeed()
 
 	//用鼠标来提供碰撞
 	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
-	if(Distance < DIAMETER)
+	//if(Distance < DIAMETER)
+	//{
+	//	xSpeed += xCursorSpeed;
+	//	ySpeed += yCursorSpeed;
+	//}
+
+	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x));
+	double CursorWindowAngle = atan((double)(yCursorSpeed / xCursorSpeed));
+	double CursorSpeedAngle = CursorWindowAngle - CursorAngle;
+
+	double CircleAngle = atan((double)(ySpeed / xSpeed));
+	double ResultAngle = PI - (CursorAngle * 2 - CircleAngle);
+	if(Distance <= DIAMETER && Flag == 0)
 	{
-		xSpeed += xCursorSpeed;
-		ySpeed += yCursorSpeed;
+		ySpeed = -sin(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2));
+		xSpeed = cos(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2));
+		Flag = 1;
 	}
 
-	//xSpeed += (despt.x - currpt.x) / TPROPOR;
+	if(Distance > DIAMETER)
+	{
+		Flag = 0;
+	}
 }
 
 void Action::CirCleMove(HBITMAP hBitMap)
@@ -107,7 +124,7 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 		OutPoint[ptNum].x = (int)(DIAMETER * cos(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.x;
 		OutPoint[ptNum].y = (int)(DIAMETER * sin(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.y;
 		InPoint[ptNum].x = (int)((DIAMETER - 1) * cos(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.x;
-		InPoint[ptNum].y = (int)((DIAMETER - 1)* sin(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.y;
+		InPoint[ptNum].y = (int)((DIAMETER - 1) * sin(2 * PI * ((double)ptNum+1) / (double)PTNUM)) + pt.y;
 		if(InPoint[ptNum].y < pt.y)
 		{
 			InPoint[ptNum].y = pt.y;

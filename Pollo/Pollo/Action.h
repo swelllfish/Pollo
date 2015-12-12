@@ -8,7 +8,7 @@
 #define PI			3.1415926			//派
 #define AREA        DIAMETER*DIAMETER*PI//面积
 #define GRAVITY     10					//重力
-#define TIMER_CLK   16					//定时器周期
+#define TIMER_CLK   1					//定时器周期
 #define TPROPOR		41					//与真实时间的比例，由于像素点与真实距离差别大，因此提高时间比例来提高速度
 #define ELASTICLOSS 1.3					//弹性损失
 
@@ -38,6 +38,6 @@ private:
 	double yCursorSpeed;
 	HBITMAP hBitEyes;	//眼睛
 	HBITMAP hBitShadow;
-
+	char Flag;
 };
 
