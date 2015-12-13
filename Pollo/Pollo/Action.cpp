@@ -9,14 +9,14 @@
 Action::Action(void)
 {
 	xLocation	= 500;
-	yLocation	= DIAMETER;
+	yLocation	= 500;
 	xSpeed		= 0;
-	ySpeed		= 0;
+	ySpeed		= -80;
 	preCursor.x = 0;
 	preCursor.y = 0;
 	nowCursor.x = 0;
 	nowCursor.y = 0;
-	Flag = 0;
+	InCircleFlag = 0;
 }
 
 
@@ -43,28 +43,36 @@ void Action::CalSpeed()
 
 	//用鼠标来提供碰撞
 	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
-	//if(Distance < DIAMETER)
-	//{
-	//	xSpeed += xCursorSpeed;
-	//	ySpeed += yCursorSpeed;
-	//}
 
 	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x));
-	double CursorWindowAngle = atan((double)(yCursorSpeed / xCursorSpeed));
-	double CursorSpeedAngle = CursorWindowAngle - CursorAngle;
-
 	double CircleAngle = atan((double)(ySpeed / xSpeed));
-	double ResultAngle = PI - (CursorAngle * 2 - CircleAngle);
-	if(Distance <= DIAMETER && Flag == 0)
+	ResultAngle = PI - (CursorAngle * 2 - CircleAngle);
+	if(ResultAngle > PI * 2)
 	{
-		ySpeed = -sin(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2));
-		xSpeed = cos(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2));
-		Flag = 1;
+		ResultAngle = PI * 2;
+	}
+	if(ResultAngle < 0)
+	{
+		ResultAngle = 0.0001;
+	}
+	if(InCircleFlag == 0 && Distance <= DIAMETER)
+	{
+		if(nowCursor.x - currpt.x > 0)
+		{
+			ySpeed = -sin(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + yCursorSpeed;
+			xSpeed = cos(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + xCursorSpeed;
+		}
+		else// if(nowCursor.x - currpt.x <= 0)
+		{
+			ySpeed = sin(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + yCursorSpeed;
+			xSpeed = -cos(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + xCursorSpeed;
+		}
+		InCircleFlag = 1;
 	}
 
 	if(Distance > DIAMETER)
 	{
-		Flag = 0;
+		InCircleFlag = 0;
 	}
 }
 

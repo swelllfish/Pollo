@@ -62,6 +62,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	HDC hdc, hdcBuffer;
 	HINSTANCE hInstance;
 
+	//TCHAR Buffer[10];
+	//CString str;
+
 	switch(message)
 	{
 	case WM_CREATE:
@@ -96,6 +99,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SelectObject(hdcBuffer, hBitMap);
 		BitBlt(hdc, 0, 0, cxClient, cyClient, hdcBuffer, 0, 0, SRCCOPY);
 		DeleteDC(hdcBuffer);
+
+		//str.Format(L"%f", action.ResultAngle);
+		//TextOut(hdc, 0, 0, Buffer, wsprintf(Buffer, TEXT("%s"), str.GetBuffer(str.GetLength())));
+
 		EndPaint(hwnd, &ps);
 		return 0;
 
