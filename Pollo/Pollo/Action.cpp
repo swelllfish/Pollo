@@ -10,8 +10,8 @@ Action::Action(void)
 {
 	xLocation	= 500;
 	yLocation	= 500;
-	xSpeed		= 0;
-	ySpeed		= -80;
+	Speed_Pollo.xSpeed		= 0;
+	Speed_Pollo.ySpeed		= -80;
 	preCursor.x = 0;
 	preCursor.y = 0;
 	nowCursor.x = 0;
@@ -31,21 +31,21 @@ void Action::CalSpeed()
 
 	if(yLocation < DIAMETER || yLocation > cyClient - DIAMETER)
 	{
-		ySpeed = -(ySpeed / ELASTICLOSS);
+		Speed_Pollo.ySpeed = -(Speed_Pollo.ySpeed / ELASTICLOSS);
 	}
 
 	if(xLocation < DIAMETER || xLocation > cxClient - DIAMETER)
 	{
-		xSpeed = -(xSpeed / ELASTICLOSS);
+		Speed_Pollo.xSpeed = -(Speed_Pollo.xSpeed / ELASTICLOSS);
 	}
 
-	ySpeed += dGravity * dFrequency;	//当前速度等于 t*a+v
+	Speed_Pollo.ySpeed += dGravity * dFrequency;	//当前速度等于 t*a+v
 
 	//用鼠标来提供碰撞
 	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
 
 	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x));
-	double CircleAngle = atan((double)(ySpeed / xSpeed));
+	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / Speed_Pollo.xSpeed));
 	ResultAngle = PI - (CursorAngle * 2 - CircleAngle);
 	if(ResultAngle > PI * 2)
 	{
@@ -59,13 +59,13 @@ void Action::CalSpeed()
 	{
 		if(nowCursor.x - currpt.x > 0)
 		{
-			ySpeed = -sin(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + yCursorSpeed;
-			xSpeed = cos(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + xCursorSpeed;
+			Speed_Pollo.ySpeed = -sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + yCursorSpeed;
+			Speed_Pollo.xSpeed = cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + xCursorSpeed;
 		}
 		else// if(nowCursor.x - currpt.x <= 0)
 		{
-			ySpeed = sin(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + yCursorSpeed;
-			xSpeed = -cos(ResultAngle) * sqrt(pow(xSpeed, 2) + pow(ySpeed, 2)) + xCursorSpeed;
+			Speed_Pollo.ySpeed = sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + yCursorSpeed;
+			Speed_Pollo.xSpeed = -cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + xCursorSpeed;
 		}
 		InCircleFlag = 1;
 	}
@@ -81,8 +81,8 @@ void Action::CirCleMove(HBITMAP hBitMap)
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
 
 
-	xLocation += xSpeed * dFrequency;
-	yLocation += ySpeed * dFrequency;
+	xLocation += Speed_Pollo.xSpeed * dFrequency;
+	yLocation += Speed_Pollo.ySpeed * dFrequency;
 
 	CalSpeed();
 

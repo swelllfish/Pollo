@@ -12,6 +12,12 @@
 #define TPROPOR		41					//与真实时间的比例，由于像素点与真实距离差别大，因此提高时间比例来提高速度
 #define ELASTICLOSS 1.3					//弹性损失
 
+typedef struct
+{
+	double xSpeed;
+	double ySpeed;
+}SPEED_POLLO;	//移动速度
+
 class Action
 {
 public:
@@ -28,6 +34,8 @@ public:
 
 	//int CalBezierPoint(HDC, int, int, int, POINT);	//计算贝塞尔曲线，根据强度来决定振幅，通过比例来决定状态
 private:
+	SPEED_POLLO Speed_Pollo;
+
 	POINT currpt;		//当前位置
 	POINT preCursor;	//鼠标前一个位置
 	POINT nowCursor;	//鼠标当前位置
@@ -35,8 +43,8 @@ private:
 	double yLocation;
 	int cxClient;		//界面大小
 	int cyClient;
-	double xSpeed;		//速度
-	double ySpeed;
+	//double xSpeed;		//速度
+	//double ySpeed;
 	double xCursorSpeed;//鼠标速度
 	double yCursorSpeed;
 	HBITMAP hBitEyes;	//眼睛
