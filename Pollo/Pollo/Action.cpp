@@ -10,7 +10,7 @@ Action::Action(void)
 {
 	xLocation	= 500;
 	yLocation	= 500;
-	Speed_Pollo.xSpeed		= 0;
+	Speed_Pollo.xSpeed		= 1;
 	Speed_Pollo.ySpeed		= -80;
 	preCursor.x = 0;
 	preCursor.y = 0;
@@ -45,27 +45,51 @@ void Action::CalSpeed()
 	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
 
 	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x));
+	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
+	if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
+	{
+		CursorAngle = -CursorAngle + 2/PI;
+	}
+	else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
+	{
+		CursorAngle = - PI + CursorAngle;
+	}
+
 	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / Speed_Pollo.xSpeed));
-	ResultAngle = PI - (CursorAngle * 2 - CircleAngle);
-	if(ResultAngle > PI * 2)
+	if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
 	{
-		ResultAngle = PI * 2;
+		CircleAngle = -CircleAngle + 2/PI;
 	}
-	if(ResultAngle < 0)
+	else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
 	{
-		ResultAngle = 0.0001;
+		CircleAngle = - PI + CircleAngle;
 	}
+
+	ResultAngle = CursorAngle * 2 + CircleAngle - PI;
+
+	//如果某一运动方向与指针所处该象限的三角函数得出的符号相同，则需要把速度取反，否则取正
+	//sin是上两个象限为负号，下两个象限为正号
+	//cos是右边两个象限为正号，左边两个象限为负号
+	//比如向下运动时，y速度为正，指针位于下面的象限，sin为正，同号所以y要取反
+	//向上运动是y为负，指针位于下面的象限，sin为正，不同号所以不用取反
 	if(InCircleFlag == 0 && Distance <= DIAMETER)
 	{
-		if(nowCursor.x - currpt.x > 0)
+		if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
 		{
-			Speed_Pollo.ySpeed = -sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + yCursorSpeed;
-			Speed_Pollo.xSpeed = cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + xCursorSpeed;
+			Speed_Pollo.ySpeed = sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.ySpeed;
 		}
-		else// if(nowCursor.x - currpt.x <= 0)
+		else	//同号取反
 		{
-			Speed_Pollo.ySpeed = sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + yCursorSpeed;
-			Speed_Pollo.xSpeed = -cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + xCursorSpeed;
+			Speed_Pollo.ySpeed = -sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.ySpeed;
+		}
+
+		if((Speed_Pollo.xSpeed < 0 && nowCursor.x - currpt.x > 0) || (Speed_Pollo.xSpeed > 0 && nowCursor.x - currpt.x < 0))//不同号取正
+		{
+			Speed_Pollo.xSpeed = cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.xSpeed;
+		}
+		else	//同号取反
+		{
+			Speed_Pollo.xSpeed = -cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.xSpeed;
 		}
 		InCircleFlag = 1;
 	}
@@ -183,8 +207,8 @@ void Action::GetCurrCursor(POINT currCursor)
 	preCursor = nowCursor;
 	nowCursor = currCursor;
 
-	xCursorSpeed = nowCursor.x - preCursor.x;
-	yCursorSpeed = nowCursor.y - preCursor.y;
+	Speed_Cursor.xSpeed = nowCursor.x - preCursor.x;
+	Speed_Cursor.ySpeed = nowCursor.y - preCursor.y;
 }
 //******iStatus 表示在目前震动的状态，数值为1-50***************//
 //******iStrength表示目前震动的强度，数值范围待定**************//
