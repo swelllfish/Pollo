@@ -36,9 +36,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 		MessageBox(NULL, TEXT("Ni TM Zl Db Wo!"), szAppName, MB_ICONERROR);
 		return 0;
 	}
+
+	RECT hRect;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, (PVOID)&hRect, 0);	//获取工作区大小
+
 	hwnd = CreateWindow(szAppName, TEXT("Pollo"), WS_OVERLAPPEDWINDOW,
-	0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
-	NULL, NULL, hInstance, NULL);
+						0, 0, 
+						hRect.right,	//GetSystemMetrics(SM_CXSCREEN), 
+						hRect.bottom,	//GetSystemMetrics(SM_CYSCREEN),
+						NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hwnd, iCmdShow);
 	UpdateWindow(hwnd);
