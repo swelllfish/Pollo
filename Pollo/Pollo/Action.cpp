@@ -48,48 +48,70 @@ void Action::CalSpeed()
 	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
 	if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
 	{
-		CursorAngle = -CursorAngle + 2/PI;
+		CursorAngle = CursorAngle + PI;
 	}
 	else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
 	{
-		CursorAngle = - PI + CursorAngle;
+		CursorAngle = CursorAngle - PI;
 	}
 
 	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / Speed_Pollo.xSpeed));
 	if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
 	{
-		CircleAngle = -CircleAngle + 2/PI;
+		CircleAngle = CircleAngle + PI;
 	}
 	else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
 	{
-		CircleAngle = - PI + CircleAngle;
+		CircleAngle = CircleAngle - PI;
 	}
 
-	ResultAngle = CursorAngle * 2 + CircleAngle - PI;
+	//计算角度时，根据相对大小来计算夹角
+	if(CursorAngle >= 0)
+	{
+		ResultAngle = CursorAngle * 2 - CircleAngle - PI;
+	}
+	else
+	{
+		ResultAngle = CursorAngle * 2 - CircleAngle + PI;
+	}
+
+	//使ResultAngle的值在-PI到PI之间
+	if(ResultAngle > PI)
+	{
+		ResultAngle = 2 * PI - ResultAngle;
+	}
+	else if (ResultAngle < -PI)
+	{
+		ResultAngle = 2 * PI + ResultAngle;
+	}
 
 	//如果某一运动方向与指针所处该象限的三角函数得出的符号相同，则需要把速度取反，否则取正
 	//sin是上两个象限为负号，下两个象限为正号
 	//cos是右边两个象限为正号，左边两个象限为负号
 	//比如向下运动时，y速度为正，指针位于下面的象限，sin为正，同号所以y要取反
 	//向上运动是y为负，指针位于下面的象限，sin为正，不同号所以不用取反
+	double Speed = sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2));
+
 	if(InCircleFlag == 0 && Distance <= DIAMETER)
 	{
-		if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
+		//if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
+		if(ResultAngle >= 0)
 		{
-			Speed_Pollo.ySpeed = sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.ySpeed;
+			Speed_Pollo.ySpeed = fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
 		}
-		else	//同号取反
+		else
 		{
-			Speed_Pollo.ySpeed = -sin(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.ySpeed;
+			Speed_Pollo.ySpeed = -fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
 		}
 
-		if((Speed_Pollo.xSpeed < 0 && nowCursor.x - currpt.x > 0) || (Speed_Pollo.xSpeed > 0 && nowCursor.x - currpt.x < 0))//不同号取正
+		//if((Speed_Pollo.xSpeed < 0 && nowCursor.x - currpt.x > 0) || (Speed_Pollo.xSpeed > 0 && nowCursor.x - currpt.x < 0))//不同号取正
+		if(ResultAngle >= -2/PI && ResultAngle < 2/PI)
 		{
-			Speed_Pollo.xSpeed = cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.xSpeed;
+			Speed_Pollo.xSpeed = fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
 		}
-		else	//同号取反
+		else
 		{
-			Speed_Pollo.xSpeed = -cos(ResultAngle) * sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2)) + Speed_Cursor.xSpeed;
+			Speed_Pollo.xSpeed = -fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
 		}
 		InCircleFlag = 1;
 	}
