@@ -112,6 +112,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hwnd, &ps);
 		return 0;
 
+	case WM_LBUTTONDOWN:
+		action.GetMouseLButton(1);
+		return 0;
+
+	case WM_LBUTTONUP:
+		action.GetMouseLButton(0);
+		return 0;
+
 	case WM_DESTROY:
 		KillTimer(hwnd, ID_TIMER);
 		DeleteObject(hBitMap);
