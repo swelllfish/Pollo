@@ -113,11 +113,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
+		SetCapture(hwnd);
 		action.GetMouseLButton(1);
 		return 0;
 
 	case WM_LBUTTONUP:
 		action.GetMouseLButton(0);
+		ReleaseCapture();
 		return 0;
 
 	case WM_DESTROY:
