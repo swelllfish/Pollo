@@ -45,7 +45,7 @@ private:
 	double ResultAngle;
 	HBITMAP hBitEyes;	//眼睛
 	HBITMAP hBitShadow;	//阴影
-	char InCircleFlag;
-	char MouseLBFlag;	//记录鼠标LB状态 1为按下，0为释放
+	bool InCircleFlag;
+	bool MouseLBFlag;	//记录鼠标LB状态 1为按下，0为释放
 };
 

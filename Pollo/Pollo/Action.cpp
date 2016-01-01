@@ -16,7 +16,7 @@ Action::Action(void)
 	preCursor.y = 0;
 	nowCursor.x = 0;
 	nowCursor.y = 0;
-	InCircleFlag = 0;
+	InCircleFlag = FALSE;
 }
 
 
@@ -98,7 +98,7 @@ void Action::CalSpeed()
 			ResultAngle = 2 * PI + ResultAngle;
 		}
 
-		if(InCircleFlag == 0)
+		if(InCircleFlag == FALSE)
 		{
 			//if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
 			if(ResultAngle >= 0)
@@ -119,13 +119,13 @@ void Action::CalSpeed()
 			{
 				Speed_Pollo.xSpeed = -fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
 			}
-			InCircleFlag = 1;
+			InCircleFlag = TRUE;
 		}
 	}
 
 	if(Distance > DIAMETER)
 	{
-		InCircleFlag = 0;
+		InCircleFlag = FALSE;
 	}
 }
 
