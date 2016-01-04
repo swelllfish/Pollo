@@ -206,6 +206,9 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
 	BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
 
+	HDC hdcRotateBuff;
+	Rotate(hBitMap, 0, hdcBuffer, hdcRotateBuff);
+
 	SelectObject(hdcShadow, hBitShadow);
 	BLENDFUNCTION Blendfunction;
 	Blendfunction.BlendOp = AC_SRC_OVER;
@@ -240,9 +243,48 @@ void Action::GetCurrCursor(POINT currCursor)
 	Speed_Cursor.ySpeed = nowCursor.y - preCursor.y;
 }
 
-void Action::GetMouseLButton(char LBStatus)
+void Action::GetMouseLButton(bool LBStatus)
 {
 	MouseLBFlag = LBStatus;
+}
+
+void Action::Rotate(HBITMAP hBmpSrc, float angle, HDC hdcSrc, HDC &hdcDst)	//按角度旋转图案
+{
+	HBITMAP hBmpDst;
+
+	hdcDst = CreateCompatibleDC(hdcSrc);
+	hBmpDst = CreateCompatibleBitmap(hdcSrc, 100, 100);
+	SelectObject(hdcDst, hBmpDst);
+
+	pBGR src, dst, dstLine;
+	src = MyGetDibBits(hdcSrc, hBmpSrc, 100, 100);
+	dst = MyGetDibBits(hdcDst, hBmpDst, 100, 100);
+
+}
+
+pBGR Action::MyGetDibBits(HDC hdcSrc, HBITMAP hBmpSrc, int nx, int ny)
+{
+	BITMAPINFO bi;
+	BOOL bRes;
+	pBGR buf;
+
+	bi.bmiHeader.biSize = sizeof(bi.bmiHeader);
+	bi.bmiHeader.biWidth = nx;
+	bi.bmiHeader.biHeight = - ny;
+	bi.bmiHeader.biPlanes = 1;
+	bi.bmiHeader.biBitCount = 32;
+	bi.bmiHeader.biCompression = BI_RGB;
+	bi.bmiHeader.biSizeImage = nx * 4 * ny;
+	bi.bmiHeader.biClrUsed = 0;
+	bi.bmiHeader.biClrImportant = 0;
+
+	buf = (pBGR) malloc(nx * 4 * ny);
+	bRes = GetDIBits(hdcSrc, hBmpSrc, 0, ny, buf, &bi, DIB_RGB_COLORS);
+	if (!bRes) {
+		free(buf);
+		buf = 0;
+	}
+	return buf;
 }
 //******iStatus 表示在目前震动的状态，数值为1-50***************//
 //******iStrength表示目前震动的强度，数值范围待定**************//

@@ -18,6 +18,13 @@ typedef struct
 	double ySpeed;
 }SPEED;	//移动速度
 
+typedef struct ssBGR {
+	unsigned char b;
+	unsigned char g;
+	unsigned char r;
+	unsigned char pad;
+}sBGR, *pBGR;
+
 class Action
 {
 public:
@@ -29,7 +36,9 @@ public:
 	void CalSpeed();
 	void GetBitMap(HINSTANCE);
 	void GetCurrCursor(POINT);
-	void GetMouseLButton(char);			//获取鼠标左键状态
+	void GetMouseLButton(bool);			//获取鼠标左键状态
+	void Rotate(HBITMAP, float, HDC, HDC &);
+	pBGR MyGetDibBits(HDC hdcSrc, HBITMAP hBmpSrc, int nx, int ny);
 	//int CalBezierPoint(HDC, int, int, int, POINT);	//计算贝塞尔曲线，根据强度来决定振幅，通过比例来决定状态
 private:
 	SPEED Speed_Pollo;	//移动速度
