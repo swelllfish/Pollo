@@ -203,11 +203,15 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	//CalBezierPoint(hdcBuffer, 1, 10, 1, pt);
 
 	SelectObject(hdcEyes, hBitEyes);
-	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
-	BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
 
 	HDC hdcRotateBuff;
-	Rotate(hBitMap, 0, hdcBuffer, hdcRotateBuff);
+	Rotate(hBitEyes, 0, hdcBuffer, hdcRotateBuff);
+
+	//BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
+	//BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
+
+	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcRotateBuff, 0, 0, SRCAND);
+
 
 	SelectObject(hdcShadow, hBitShadow);
 	BLENDFUNCTION Blendfunction;
@@ -253,13 +257,35 @@ void Action::Rotate(HBITMAP hBmpSrc, float angle, HDC hdcSrc, HDC &hdcDst)	//°´½
 	HBITMAP hBmpDst;
 
 	hdcDst = CreateCompatibleDC(hdcSrc);
-	hBmpDst = CreateCompatibleBitmap(hdcSrc, 100, 100);
+	hBmpDst = CreateCompatibleBitmap(hdcDst, 14, 17);
 	SelectObject(hdcDst, hBmpDst);
 
 	pBGR src, dst, dstLine;
-	src = MyGetDibBits(hdcSrc, hBmpSrc, 100, 100);
-	dst = MyGetDibBits(hdcDst, hBmpDst, 100, 100);
+	src = MyGetDibBits(hdcSrc, hBmpSrc, 14, 17);
+	dst = MyGetDibBits(hdcDst, hBmpDst, 14, 17);
 
+	dstLine = dst;
+	for(int i = 0; i < 14 * 17; ++i)
+	{
+		dstLine[i] = src[i];
+	}
+
+	// Set the new Bitmap	
+	BITMAPINFO bi;
+	bi.bmiHeader.biSize = sizeof(bi.bmiHeader);
+	bi.bmiHeader.biWidth = 14;
+	bi.bmiHeader.biHeight = 17;
+	bi.bmiHeader.biPlanes = 1;
+	bi.bmiHeader.biBitCount = 32;
+	bi.bmiHeader.biCompression = BI_RGB;
+	bi.bmiHeader.biSizeImage = 14 * 4 * 17;
+	bi.bmiHeader.biClrUsed = 0;
+	bi.bmiHeader.biClrImportant = 0;
+	SetDIBits(hdcDst, hBmpDst, 0, 100, dst, &bi, DIB_RGB_COLORS);
+	DeleteObject(hBmpDst);
+
+	free(dst);
+	free(src);
 }
 
 pBGR Action::MyGetDibBits(HDC hdcSrc, HBITMAP hBmpSrc, int nx, int ny)
