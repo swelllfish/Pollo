@@ -41,6 +41,10 @@ void Action::CalSpeed()
 
 	Speed_Pollo.ySpeed += dGravity * dFrequency;	//当前速度等于 t*a+v
 
+	if(Speed_Pollo.ySpeed > 0 && Speed_Pollo.ySpeed < 3.2)
+	{
+		Speed_Pollo.xSpeed -= FRICTION * Speed_Pollo.xSpeed;
+	}
 	//用鼠标来提供碰撞
 	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
 

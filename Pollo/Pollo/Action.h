@@ -10,7 +10,8 @@
 #define GRAVITY     10					//重力
 #define TIMER_CLK   16					//定时器周期
 #define TPROPOR		41					//与真实时间的比例，由于像素点与真实距离差别大，因此提高时间比例来提高速度
-#define ELASTICLOSS 1.3					//弹性损失
+#define ELASTICLOSS 3					//弹性损失
+#define FRICTION	0.1					//表面摩擦
 
 typedef struct
 {
