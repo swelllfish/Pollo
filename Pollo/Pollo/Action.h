@@ -34,7 +34,8 @@ public:
 	void DrawCirCle(HBITMAP, POINT);	//画Pollo~
 	void CirCleMove(HBITMAP);			//Pollo移动
 	void SurfaceChange(int, int);		//界面边界变化
-	void CalSpeed();
+	void CalSpeed();	
+	SPEED CalVectorSpeed();		//碰撞结果计算
 	void GetBitMap(HINSTANCE);
 	void GetCurrCursor(POINT);
 	void GetMouseLButton(bool);			//获取鼠标左键状态
@@ -52,7 +53,6 @@ private:
 	double yLocation;
 	int cxClient;		//界面大小
 	int cyClient;
-	double ResultAngle;
 	HBITMAP hBitEyes;	//眼睛
 	HBITMAP hBitShadow;	//阴影
 	bool InCircleFlag;

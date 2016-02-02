@@ -1,7 +1,5 @@
-/* Version: v1.0
-   Owner: Swell_Fish
-   Remarks: Now I'm learning the Palette.But don't wantted stop
-			commit new thing.So modify some Notes to make it looks better
+/* 
+动作控制cpp，包含所有的动作控制函数和接口
 */
 #include "StdAfx.h"
 #include "Action.h"
@@ -61,76 +59,111 @@ void Action::CalSpeed()
 
 	else if(Distance <= DIAMETER)
 	{
-		double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001));
-		//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
-		if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
-		{
-			CursorAngle = CursorAngle + PI;
-		}
-		else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
-		{
-			CursorAngle = CursorAngle - PI;
-		}
+		CalVectorSpeed();
+		//double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001));
+		////arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
+		//if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
+		//{
+		//	CursorAngle = CursorAngle + PI;
+		//}
+		//else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
+		//{
+		//	CursorAngle = CursorAngle - PI;
+		//}
 
-		double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0
-		if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
-		{
-			CircleAngle = CircleAngle + PI;
-		}
-		else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
-		{
-			CircleAngle = CircleAngle - PI;
-		}
+		//double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0
+		//if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
+		//{
+		//	CircleAngle = CircleAngle + PI;
+		//}
+		//else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
+		//{
+		//	CircleAngle = CircleAngle - PI;
+		//}
 
-		//计算角度时，根据相对大小来计算夹角
-		if(CursorAngle >= 0)
-		{
-			ResultAngle = CursorAngle * 2 - CircleAngle - PI;
-		}
-		else
-		{
-			ResultAngle = CursorAngle * 2 - CircleAngle + PI;
-		}
+		////计算角度时，根据相对大小来计算夹角
+		//if(CursorAngle >= 0)
+		//{
+		//	//ResultAngle = CursorAngle * 2 - CircleAngle - PI;
+		//}
+		//else
+		//{
+		//	//ResultAngle = CursorAngle * 2 - CircleAngle + PI;
+		//}
 
-		//使ResultAngle的值在-PI到PI之间
-		if(ResultAngle > PI)
-		{
-			ResultAngle = 2 * PI - ResultAngle;
-		}
-		else if (ResultAngle < -PI)
-		{
-			ResultAngle = 2 * PI + ResultAngle;
-		}
+		////使ResultAngle的值在-PI到PI之间
+		//if(ResultAngle > PI)
+		//{
+		//	ResultAngle = 2 * PI - ResultAngle;
+		//}
+		//else if (ResultAngle < -PI)
+		//{
+		//	ResultAngle = 2 * PI + ResultAngle;
+		//}
 
-		if(InCircleFlag == FALSE)
-		{
-			//if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
-			if(ResultAngle >= 0)
-			{
-				Speed_Pollo.ySpeed = fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
-			}
-			else
-			{
-				Speed_Pollo.ySpeed = -fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
-			}
+		//if(InCircleFlag == FALSE)
+		//{
+		//	//if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
+		//	if(ResultAngle >= 0)
+		//	{
+		//		Speed_Pollo.ySpeed = fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
+		//	}
+		//	else
+		//	{
+		//		Speed_Pollo.ySpeed = -fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
+		//	}
 
-			//if((Speed_Pollo.xSpeed < 0 && nowCursor.x - currpt.x > 0) || (Speed_Pollo.xSpeed > 0 && nowCursor.x - currpt.x < 0))//不同号取正
-			if(ResultAngle >= -2/PI && ResultAngle < 2/PI)
-			{
-				Speed_Pollo.xSpeed = fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
-			}
-			else
-			{
-				Speed_Pollo.xSpeed = -fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
-			}
-			InCircleFlag = TRUE;
-		}
+		//	//if((Speed_Pollo.xSpeed < 0 && nowCursor.x - currpt.x > 0) || (Speed_Pollo.xSpeed > 0 && nowCursor.x - currpt.x < 0))//不同号取正
+		//	if(ResultAngle >= -2/PI && ResultAngle < 2/PI)
+		//	{
+		//		Speed_Pollo.xSpeed = fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
+		//	}
+		//	else
+		//	{
+		//		Speed_Pollo.xSpeed = -fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
+		//	}
+		//	InCircleFlag = TRUE;
+		//}
 	}
 
 	if(Distance > DIAMETER)
 	{
 		InCircleFlag = FALSE;
 	}
+}
+
+SPEED Action::CalVectorSpeed()
+{
+	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001)); //指针与
+	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
+	if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
+	{
+		CursorAngle = CursorAngle + PI;
+	}
+	else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
+	{
+		CursorAngle = CursorAngle - PI;
+	}
+
+	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0
+	if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
+	{
+		CircleAngle = CircleAngle + PI;
+	}
+	else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
+	{
+		CircleAngle = CircleAngle - PI;
+	}
+
+	double ResultAngle;
+
+	ResultAngle = fabs(CircleAngle - CursorAngle);
+
+	SPEED ResultSpeed;
+
+	ResultSpeed.xSpeed = ResultSpeed.ySpeed = 0;
+
+	return ResultSpeed;
 }
 
 void Action::CirCleMove(HBITMAP hBitMap)
@@ -204,17 +237,16 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	SelectObject(hdcBuffer, hBrush);
 	Polygon(hdcBuffer, InPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(BLACK_PEN));
-	//CalBezierPoint(hdcBuffer, 1, 10, 1, pt);
 
 	SelectObject(hdcEyes, hBitEyes);
 
-	HDC hdcRotateBuff;
-	Rotate(hBitEyes, 0, hdcBuffer, hdcRotateBuff);
+	//HDC hdcRotateBuff;
+	//Rotate(hBitEyes, 0, hdcBuffer, hdcRotateBuff);
 
-	//BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
-	//BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
+	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcEyes, 0, 0, SRCAND);
+	BitBlt(hdcBuffer, pt.x + 23, pt.y - 28, 14, 17, hdcEyes, 0, 0, SRCAND);
 
-	BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcRotateBuff, 0, 0, SRCAND);
+	//BitBlt(hdcBuffer, pt.x + 7, pt.y - 18, 14, 17, hdcRotateBuff, 0, 0, SRCAND);
 
 
 	SelectObject(hdcShadow, hBitShadow);
