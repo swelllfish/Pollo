@@ -46,7 +46,7 @@ void Action::CalSpeed()
 	//用鼠标来提供碰撞
 	double Distance = sqrt(double(pow((double)(nowCursor.x - currpt.x), 2) + pow((double)(nowCursor.y - currpt.y), 2)));
 
-	double Speed = sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2));
+	//double Speed = sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2));
 
 	if(MouseLBFlag)	//如果是鼠标拖动
 	{
@@ -59,71 +59,11 @@ void Action::CalSpeed()
 
 	else if(Distance <= DIAMETER)
 	{
-		CalVectorSpeed();
-		//double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001));
-		////arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
-		//if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
-		//{
-		//	CursorAngle = CursorAngle + PI;
-		//}
-		//else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
-		//{
-		//	CursorAngle = CursorAngle - PI;
-		//}
-
-		//double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0
-		//if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
-		//{
-		//	CircleAngle = CircleAngle + PI;
-		//}
-		//else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
-		//{
-		//	CircleAngle = CircleAngle - PI;
-		//}
-
-		////计算角度时，根据相对大小来计算夹角
-		//if(CursorAngle >= 0)
-		//{
-		//	//ResultAngle = CursorAngle * 2 - CircleAngle - PI;
-		//}
-		//else
-		//{
-		//	//ResultAngle = CursorAngle * 2 - CircleAngle + PI;
-		//}
-
-		////使ResultAngle的值在-PI到PI之间
-		//if(ResultAngle > PI)
-		//{
-		//	ResultAngle = 2 * PI - ResultAngle;
-		//}
-		//else if (ResultAngle < -PI)
-		//{
-		//	ResultAngle = 2 * PI + ResultAngle;
-		//}
-
-		//if(InCircleFlag == FALSE)
-		//{
-		//	//if((Speed_Pollo.ySpeed >= 0 && nowCursor.y - currpt.y < 0) || (Speed_Pollo.ySpeed < 0 && nowCursor.y - currpt.y >= 0))	//不同号取正
-		//	if(ResultAngle >= 0)
-		//	{
-		//		Speed_Pollo.ySpeed = fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
-		//	}
-		//	else
-		//	{
-		//		Speed_Pollo.ySpeed = -fabs(sin(ResultAngle)) * Speed + Speed_Cursor.ySpeed;
-		//	}
-
-		//	//if((Speed_Pollo.xSpeed < 0 && nowCursor.x - currpt.x > 0) || (Speed_Pollo.xSpeed > 0 && nowCursor.x - currpt.x < 0))//不同号取正
-		//	if(ResultAngle >= -2/PI && ResultAngle < 2/PI)
-		//	{
-		//		Speed_Pollo.xSpeed = fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
-		//	}
-		//	else
-		//	{
-		//		Speed_Pollo.xSpeed = -fabs(cos(ResultAngle)) * Speed + Speed_Cursor.xSpeed;
-		//	}
-		//	InCircleFlag = TRUE;
-		//}
+		if(InCircleFlag == FALSE)
+		{
+			Speed_Pollo = CalVectorSpeed();
+			InCircleFlag = TRUE;
+		}
 	}
 
 	if(Distance > DIAMETER)
@@ -134,18 +74,22 @@ void Action::CalSpeed()
 
 SPEED Action::CalVectorSpeed()
 {
-	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001)); //指针与
+	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001)); //指针与pollo的角度
+	double RealCursorAngle = CursorAngle - PI;	//得到指针给予速度的角度
 	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
 	if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
 	{
 		CursorAngle = CursorAngle + PI;
+		RealCursorAngle = RealCursorAngle + PI;
 	}
 	else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
 	{
 		CursorAngle = CursorAngle - PI;
+		RealCursorAngle = RealCursorAngle - PI;
 	}
 
-	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0
+	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0 //pollo本身的速度角度
+	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
 	if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
 	{
 		CircleAngle = CircleAngle + PI;
@@ -157,11 +101,26 @@ SPEED Action::CalVectorSpeed()
 
 	double ResultAngle;
 
-	ResultAngle = fabs(CircleAngle - CursorAngle);
+	SPEED ResultSpeed;	//碰撞结果的速度向量
+	ResultSpeed.xSpeed = Speed_Pollo.xSpeed;
+	ResultSpeed.ySpeed = Speed_Pollo.ySpeed;
 
-	SPEED ResultSpeed;
+	double MPolloSpeed;	//pollo Speed的模
+	double MCursorSpeed;//指针速度的模
+	ResultAngle = abs(CircleAngle - CursorAngle);
 
-	ResultSpeed.xSpeed = ResultSpeed.ySpeed = 0;
+	//只有当pollo速度角度和指针碰撞角度的夹角小于90度时，结果向量才为向量相减计算
+	if(ResultAngle <= PI/2 && ResultAngle >= -PI/2)
+	{
+		MPolloSpeed = sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2));	//Pollo本身速度的模
+		MCursorSpeed = MPolloSpeed * cos(ResultAngle) * 2;	//通过碰撞，指针给予pollo的速度的模
+
+		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过速度的模和指针给的速度的方向，计算出速度的向量
+		ResultSpeed.ySpeed = MCursorSpeed * sin(RealCursorAngle);
+
+		ResultSpeed.xSpeed = ResultSpeed.xSpeed + Speed_Pollo.xSpeed;
+		ResultSpeed.ySpeed = ResultSpeed.ySpeed + Speed_Pollo.ySpeed;
+	}
 
 	return ResultSpeed;
 }
@@ -169,7 +128,6 @@ SPEED Action::CalVectorSpeed()
 void Action::CirCleMove(HBITMAP hBitMap)
 {
 	double dFrequency = (double)TIMER_CLK/TPROPOR;
-
 
 	xLocation += Speed_Pollo.xSpeed * dFrequency;
 	yLocation += Speed_Pollo.ySpeed * dFrequency;
@@ -348,56 +306,4 @@ pBGR Action::MyGetDibBits(HDC hdcSrc, HBITMAP hBmpSrc, int nx, int ny)
 	}
 	return buf;
 }
-//******iStatus 表示在目前震动的状态，数值为1-50***************//
-//******iStrength表示目前震动的强度，数值范围待定**************//
-//int Action::CalBezierPoint(HDC hdcBuffer, int xPoint, int iStrength, int iStatus, POINT pt)
-//{
-//	POINT CtrlPoint[4];
-//	static int i = 10;
-//	static int flag = 0;
-//	static int k = 80;
-//
-//	CtrlPoint[0].x = pt.x - DIAMETER;
-//	CtrlPoint[0].y = pt.y;
-//
-//	CtrlPoint[1].x = pt.x - DIAMETER + iStrength;
-//	CtrlPoint[1].y = pt.y - i;
-//	
-//	CtrlPoint[2].x = pt.x + DIAMETER - iStrength;
-//	CtrlPoint[2].y = pt.y + i;
-//
-//	CtrlPoint[3].x = pt.x + DIAMETER;
-//	CtrlPoint[3].y = pt.y;
-//
-//	PolyBezier(hdcBuffer, CtrlPoint, 4);
-//
-//	/*
-//	double t = 0.3;
-//	int y = (int)((pt.x - DIAMETER) * pow((1-t),3) + 
-//			3 * CtrlPoint[0].x * t * pow((1-t),2) +
-//			3 * CtrlPoint[1].x * pow(t, 2)*(1-t) +
-//			pt.x + DIAMETER * pow(t,3));
-//	*/
-//
-//	if(flag == 1)
-//	{
-//		i += 6;
-//		if(i >= k)
-//		{
-//			flag = 0;
-//			k -= 2;
-//			return 0;
-//		}
-//	}
-//
-//	if(flag == 0)
-//	{
-//		i -= 6;
-//		if(i <= -k)
-//		{
-//			flag = 1;
-//			k -= 2;
-//		}
-//	}
-//	return 0;
-//}
+
