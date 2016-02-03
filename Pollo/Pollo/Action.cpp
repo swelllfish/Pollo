@@ -39,7 +39,7 @@ void Action::CalSpeed()
 
 	Speed_Pollo.ySpeed += dGravity * dFrequency;	//当前速度等于 t*a+v
 
-	if(Speed_Pollo.ySpeed > 0 && Speed_Pollo.ySpeed < 3.2)
+	if(currpt.y >= cyClient - DIAMETER)
 	{
 		Speed_Pollo.xSpeed -= FRICTION * Speed_Pollo.xSpeed;
 	}
@@ -74,7 +74,7 @@ void Action::CalSpeed()
 
 SPEED Action::CalVectorSpeed()
 {
-	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001)); //指针与pollo的角度
+	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001)); //指针与pollo碰撞时的角度
 	double RealCursorAngle = CursorAngle - PI;	//得到指针给予速度的角度
 	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
 	if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
@@ -98,6 +98,19 @@ SPEED Action::CalVectorSpeed()
 	{
 		CircleAngle = CircleAngle - PI;
 	}
+	
+	double CursorMoveAngle = atan((double)(Speed_Cursor.ySpeed) / (Speed_Cursor.xSpeed + 0.0001));	//指针移动时的角度
+	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
+	if (Speed_Cursor.xSpeed < 0 && Speed_Cursor.ySpeed >= 0)
+	{
+		CursorMoveAngle = CursorMoveAngle + PI;
+	}
+	else if (Speed_Cursor.xSpeed < 0 && Speed_Cursor.ySpeed < 0)
+	{
+		CursorMoveAngle = CursorMoveAngle - PI;
+	}
+
+	double CursorSpeedAngle = fabs(CursorMoveAngle - RealCursorAngle);	//指针的速度通过该角度传入有效速度
 
 	double ResultAngle;
 
@@ -114,12 +127,24 @@ SPEED Action::CalVectorSpeed()
 	{
 		MPolloSpeed = sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2));	//Pollo本身速度的模
 		MCursorSpeed = MPolloSpeed * cos(ResultAngle) * 2;	//通过碰撞，指针给予pollo的速度的模
+		MCursorSpeed += sqrt(pow(Speed_Cursor.xSpeed, 2) + pow(Speed_Cursor.ySpeed, 2)) * cos(CursorSpeedAngle);	//指针能提供的有效速度加成
 
-		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过速度的模和指针给的速度的方向，计算出速度的向量
+		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过速度的模和指针给的速度的方向，计算出两个向量相减之后的速度向量
 		ResultSpeed.ySpeed = MCursorSpeed * sin(RealCursorAngle);
 
-		ResultSpeed.xSpeed = ResultSpeed.xSpeed + Speed_Pollo.xSpeed;
+		ResultSpeed.xSpeed = ResultSpeed.xSpeed + Speed_Pollo.xSpeed;	//通过与pollo自身速度向量的平行位移，得出真实的速度向量
 		ResultSpeed.ySpeed = ResultSpeed.ySpeed + Speed_Pollo.ySpeed;
+	}
+	//当碰撞夹角不符合上面的角度时，即为向量相加计算
+	else
+	{
+		MCursorSpeed = sqrt(pow(Speed_Cursor.xSpeed, 2) + pow(Speed_Cursor.ySpeed, 2)) * cos(CursorSpeedAngle);		//指针能提供的有效速度加成
+
+		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过指针提供的速度的模和指针碰撞的方向，计算出指针提供的速度的向量
+		ResultSpeed.ySpeed = MCursorSpeed * sin(RealCursorAngle);
+
+		ResultSpeed.xSpeed += Speed_Pollo.xSpeed;	//通过将pollo自身速度向量平移到指针速度向量上，算出向量相加的结果
+		ResultSpeed.ySpeed += Speed_Pollo.ySpeed;
 	}
 
 	return ResultSpeed;
