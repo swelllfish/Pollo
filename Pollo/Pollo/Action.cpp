@@ -72,43 +72,33 @@ void Action::CalSpeed()
 	}
 }
 
-SPEED Action::CalVectorSpeed()
+double Action::CalVectorAngle(SPEED Vector)
 {
-	double CursorAngle = atan((double)(nowCursor.y - currpt.y) / (nowCursor.x - currpt.x + 0.0001)); //指针与pollo碰撞时的角度
-	double RealCursorAngle = CursorAngle - PI;	//得到指针给予速度的角度
+	double Angle = atan((double)(Vector.ySpeed/(Vector.xSpeed + 0x0001)));	//为了防止除以0
+	
 	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
-	if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y >= 0)
+	if (Vector.xSpeed < 0 && Vector.ySpeed >= 0)
 	{
-		CursorAngle = CursorAngle + PI;
-		RealCursorAngle = RealCursorAngle + PI;
+		Angle = Angle + PI;
 	}
-	else if (nowCursor.x - currpt.x < 0 && nowCursor.y - currpt.y < 0)
+	else if (Vector.xSpeed < 0 && Vector.ySpeed < 0)
 	{
-		CursorAngle = CursorAngle - PI;
-		RealCursorAngle = RealCursorAngle - PI;
+		Angle = Angle - PI;
 	}
 
-	double CircleAngle = atan((double)(Speed_Pollo.ySpeed / (Speed_Pollo.xSpeed + 0.0001)));//为了防止除以0 //pollo本身的速度角度
-	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
-	if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed >= 0)
-	{
-		CircleAngle = CircleAngle + PI;
-	}
-	else if (Speed_Pollo.xSpeed < 0 && Speed_Pollo.ySpeed < 0)
-	{
-		CircleAngle = CircleAngle - PI;
-	}
-	
-	double CursorMoveAngle = atan((double)(Speed_Cursor.ySpeed) / (Speed_Cursor.xSpeed + 0.0001));	//指针移动时的角度
-	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
-	if (Speed_Cursor.xSpeed < 0 && Speed_Cursor.ySpeed >= 0)
-	{
-		CursorMoveAngle = CursorMoveAngle + PI;
-	}
-	else if (Speed_Cursor.xSpeed < 0 && Speed_Cursor.ySpeed < 0)
-	{
-		CursorMoveAngle = CursorMoveAngle - PI;
-	}
+	return Angle;
+}
+
+SPEED Action::CalVectorSpeed()
+{
+	SPEED CursorImpect;	//指针碰撞时的向量
+	CursorImpect.xSpeed = nowCursor.x - currpt.x;
+	CursorImpect.ySpeed = nowCursor.y - currpt.y;
+
+	double CursorAngle = CalVectorAngle(CursorImpect);		//指针与pollo碰撞时的角度
+	double RealCursorAngle = CursorAngle - PI;				//得到指针给予速度的角度
+	double CircleAngle = CalVectorAngle(Speed_Pollo);		//pollo本身的速度角度
+	double CursorMoveAngle = CalVectorAngle(Speed_Cursor);	//指针移动时的角度
 
 	double CursorSpeedAngle = fabs(CursorMoveAngle - RealCursorAngle);	//指针的速度通过该角度传入有效速度
 

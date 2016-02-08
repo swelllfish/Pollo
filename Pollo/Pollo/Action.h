@@ -13,29 +13,30 @@
 #define ELASTICLOSS 3					//弹性损失
 #define FRICTION	0.1					//表面摩擦
 
-typedef struct
+typedef struct			//移动速度
 {
 	double xSpeed;
 	double ySpeed;
-}SPEED;	//移动速度
+}SPEED;
 
-typedef struct ssBGR {
+typedef struct ssBGR {	//每一个像素点的参数
 	unsigned char b;
 	unsigned char g;
 	unsigned char r;
 	unsigned char pad;
-}sBGR, *pBGR;
+}sBGR, *pBGR;	
 
 class Action
 {
 public:
 	Action(void);
 	~Action(void);
-	void DrawCirCle(HBITMAP, POINT);	//画Pollo~
-	void CirCleMove(HBITMAP);			//Pollo移动
+	void DrawCirCle(HBITMAP, POINT);	//画Pollo~	
 	void SurfaceChange(int, int);		//界面边界变化
-	void CalSpeed();	
-	SPEED CalVectorSpeed();		//碰撞结果计算
+	void CirCleMove(HBITMAP);			//Pollo移动
+	void CalSpeed();					//进行新的速度的计算
+	double CalVectorAngle(SPEED);		//计算向量与水平线的夹角
+	SPEED CalVectorSpeed();				//碰撞结果计算
 	void GetBitMap(HINSTANCE);
 	void GetCurrCursor(POINT);
 	void GetMouseLButton(bool);			//获取鼠标左键状态
