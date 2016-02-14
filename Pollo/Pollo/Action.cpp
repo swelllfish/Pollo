@@ -74,7 +74,7 @@ void Action::CalSpeed()
 
 double Action::CalVectorAngle(SPEED Vector)
 {
-	double Angle = atan((double)(Vector.ySpeed/(Vector.xSpeed + 0x0001)));	//为了防止除以0
+	double Angle = atan((double)(Vector.ySpeed/(Vector.xSpeed + 0.0001)));	//为了防止除以0
 	
 	//arctan值域为-2/PI到2/PI，无法表达所有角度，因此要根据相对位置来加减角度得到真实角度
 	if (Vector.xSpeed < 0 && Vector.ySpeed >= 0)
