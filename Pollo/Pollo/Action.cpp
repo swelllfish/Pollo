@@ -91,7 +91,8 @@ double Action::CalVectorAngle(SPEED Vector)
 
 SPEED Action::CalVectorSpeed()
 {
-	SPEED CursorImpect;	//指针碰撞时的向量
+	//总是叫圆不好听，叫个Pollo好了
+	SPEED CursorImpect;	//指针碰撞时的矢量
 	CursorImpect.xSpeed = nowCursor.x - currpt.x;
 	CursorImpect.ySpeed = nowCursor.y - currpt.y;
 
@@ -104,7 +105,7 @@ SPEED Action::CalVectorSpeed()
 
 	double ResultAngle;
 
-	SPEED ResultSpeed;	//碰撞结果的速度向量
+	SPEED ResultSpeed;	//碰撞结果的速度矢量
 	ResultSpeed.xSpeed = Speed_Pollo.xSpeed;
 	ResultSpeed.ySpeed = Speed_Pollo.ySpeed;
 
@@ -112,23 +113,23 @@ SPEED Action::CalVectorSpeed()
 	double MCursorSpeed;//指针速度的模
 	ResultAngle = abs(CircleAngle - CursorAngle);
 
-	//只有当pollo速度角度和指针碰撞角度的夹角小于90度时，结果向量才为向量相减计算
+	//只有当pollo速度角度和指针碰撞角度的夹角小于90度时，结果向量才为矢量相减计算
 	if(ResultAngle <= PI/2 && ResultAngle >= -PI/2)
 	{
 		MPolloSpeed = sqrt(pow(Speed_Pollo.xSpeed, 2) + pow(Speed_Pollo.ySpeed, 2));	//Pollo本身速度的模
 		MCursorSpeed = MPolloSpeed * cos(ResultAngle) * 2;	//通过碰撞，指针给予pollo的速度的模
 		MCursorSpeed += sqrt(pow(Speed_Cursor.xSpeed, 2) + pow(Speed_Cursor.ySpeed, 2)) * cos(CursorSpeedAngle);	//指针能提供的有效速度加成
 
-		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过速度的模和指针给的速度的方向，计算出两个向量相减之后的速度向量
+		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过速度的模和指针给的速度的方向，计算出两个矢量相减之后的速度向量
 		ResultSpeed.ySpeed = MCursorSpeed * sin(RealCursorAngle);
 
-		ResultSpeed.xSpeed = ResultSpeed.xSpeed + Speed_Pollo.xSpeed;	//通过与pollo自身速度向量的平行位移，得出真实的速度向量
+		ResultSpeed.xSpeed = ResultSpeed.xSpeed + Speed_Pollo.xSpeed;	//通过与pollo自身速度矢量的平行位移，得出真实的速度向量
 		ResultSpeed.ySpeed = ResultSpeed.ySpeed + Speed_Pollo.ySpeed;
 	}
-	//当碰撞夹角不符合上面的角度时，即为向量相加计算
+	//当碰撞夹角不符合上面的角度时，即为矢量相加计算
 	else
 	{
-		MCursorSpeed = sqrt(pow(Speed_Cursor.xSpeed, 2) + pow(Speed_Cursor.ySpeed, 2)) * cos(CursorSpeedAngle);		//指针能提供的有效速度加成
+		MCursorSpeed = (sqrt(pow(Speed_Cursor.xSpeed, 2) + pow(Speed_Cursor.ySpeed, 2)) * 3) * cos(CursorSpeedAngle);		//指针能提供的有效速度加成
 
 		ResultSpeed.xSpeed = MCursorSpeed * cos(RealCursorAngle);	//通过指针提供的速度的模和指针碰撞的方向，计算出指针提供的速度的向量
 		ResultSpeed.ySpeed = MCursorSpeed * sin(RealCursorAngle);
