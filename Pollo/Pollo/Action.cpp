@@ -205,10 +205,9 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
 	SelectObject(hdcBuffer,GetStockObject(NULL_BRUSH));
 	Polygon(hdcBuffer, OutPoint, PTNUM);
-	SelectObject(hdcBuffer, GetStockObject(NULL_PEN));
 	hBrush = CreateSolidBrush(RGB(100, 255, 0));
 	//SelectObject(hdcBuffer, GetStockObject(LTGRAY_BRUSH));
-	SelectObject(hdcBuffer, hBrush);
+	HBRUSH PreBrush = (HBRUSH)SelectObject(hdcBuffer, hBrush);
 	Polygon(hdcBuffer, InPoint, PTNUM);
 	SelectObject(hdcBuffer, GetStockObject(BLACK_PEN));
 
@@ -231,6 +230,9 @@ void Action::DrawCirCle(HBITMAP hBitMap, POINT pt)
 	Blendfunction.AlphaFormat = 0x00;
 
 	AlphaBlend(hdcBuffer, pt.x - DIAMETER, pt.y - DIAMETER, DIAMETER * 2, DIAMETER * 2, hdcShadow, 0, 0, DIAMETER * 2, DIAMETER * 2, Blendfunction);
+
+	SelectObject(hdcBuffer, PreBrush);
+	DeleteObject(hBrush);
 	DeleteDC(hdcBuffer);
 	DeleteDC(hdcEyes);
 	DeleteDC(hdcShadow);
